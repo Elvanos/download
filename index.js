@@ -111,7 +111,9 @@ module.exports = (uri, output, opts) => {
 
 		return makeDir(path.dirname(outputFilepath))
 			.then(() => fsP.writeFile(outputFilepath, data))
-			.then(() => data);
+			.then(() => {
+				return {data, filename};
+			});
 	});
 
 	stream.then = promise.then.bind(promise);

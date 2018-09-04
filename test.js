@@ -27,6 +27,10 @@ test.before(() => {
 		.replyWithFile(200, path.join(__dirname, 'fixture.zip'), {
 			'Content-Disposition': contentDisposition('dispo.zip')
 		})
+		.get('/dispo2')
+		.replyWithFile(200, path.join(__dirname, 'fixture.zip'), {
+			'Content-Disposition': contentDisposition('dispo2.zip')
+		})
 		.get('/chinese')
 		.replyWithFile(200, path.join(__dirname, 'fixture.zip'), {
 			'Content-Disposition': contentDisposition('%E4%B8%AD%E6%96%87.zip')
@@ -124,4 +128,10 @@ test('handle filename from file type', async t => {
 	await m('http://foo.bar/filetype', __dirname);
 	t.true(await pathExists(path.join(__dirname, 'filetype.zip')));
 	await fsP.unlink(path.join(__dirname, 'filetype.zip'));
+});
+
+test('handle content dispositon filename', async t => {
+	const {filename} = await m('http://foo.bar/dispo2', __dirname);
+	t.true(filename === 'dispo2.zip');
+	await fsP.unlink(path.join(__dirname, 'dispo2.zip'));
 });

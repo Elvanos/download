@@ -1,6 +1,9 @@
 # download [![Build Status](https://travis-ci.org/kevva/download.svg?branch=master)](https://travis-ci.org/kevva/download)
 
 > Download and extract files
+> fork from [download](https://github.com/kevva/download) , but make some changes
+> 1. decodeURIComponent content-disposition filename
+> 2. download().then( `data` => {}),  data is an object, { data, filename }
 
 *See [download-cli](https://github.com/kevva/download-cli) for the command-line version.*
 
@@ -8,7 +11,7 @@
 ## Install
 
 ```
-$ npm install download
+$ npm install @jinphen/download2
 ```
 
 
@@ -22,8 +25,8 @@ download('http://unicorn.com/foo.jpg', 'dist').then(() => {
 	console.log('done!');
 });
 
-download('http://unicorn.com/foo.jpg').then(data => {
-	fs.writeFileSync('dist/foo.jpg', data);
+download('http://unicorn.com/foo.jpg').then({ data, filename } => {
+	fs.writeFileSync(`dist/${filename}`, data);
 });
 
 download('unicorn.com/foo.jpg').pipe(fs.createWriteStream('dist/foo.jpg'));
