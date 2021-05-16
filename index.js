@@ -14,6 +14,7 @@ const pify = require('pify');
 const pEvent = require('p-event');
 const fileType = require('file-type');
 const extName = require('ext-name');
+const { Cookies } = require('electron');
 
 const fsP = pify(fs);
 const filenameFromPath = res => path.basename(url.parse(res.requestUrl).pathname);
@@ -46,10 +47,30 @@ const getFilename = (res, data) => {
 	let filename;
 
 	if (header) {
-		const parsed = contentDisposition.parse(header);
+		try {
+			const parsed = contentDisposition.parse(header);
 
-		if (parsed.parameters && parsed.parameters.filename) {
-			filename = parsed.parameters.filename;
+			if (parsed.parameters && parsed.parameters.filename) {
+				filename = parsed.parameters.filename;
+			}			
+		} catch (error) {
+			console.log(header)
+			console.log(error)
+			try {
+				console.log('Trying alternate parse')
+				const string = header;
+				const regex = new RegExp('[\\s\\r\\t\\n]*([a-z0-9\\-_]+)[\\s\\r\\t\\n]*=[\\s\\r\\t\\n]*([\'"])((?:\\\\\\2|(?!\\2).)*)\\2', 'ig');
+				const attributes = {};
+				let match;
+				while ((match = regex.exec(string))) {
+						attributes[match[1]] = match[3];
+				}
+				if(attributes.filename){
+					filename = attributes.filename
+				}				
+			} catch (error) {
+				console.log(error)				
+			}
 		}
 	}
 
